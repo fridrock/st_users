@@ -1,0 +1,1 @@
+INSERT INTO public.roles(id, name) VALUES ('b426169c-3959-4e50-a00a-cbda90055a60', 'STUDENT'),('dbd4f038-1f75-4c38-a686-1c011598eecd', 'TEACHER')
