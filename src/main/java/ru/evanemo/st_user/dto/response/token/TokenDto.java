@@ -9,4 +9,5 @@ import lombok.Setter;
 @Setter
 public class TokenDto{
   private String accessToken;
+  private String roleName;
 }

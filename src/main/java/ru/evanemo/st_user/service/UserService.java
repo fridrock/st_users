@@ -5,6 +5,8 @@ import org.hibernate.annotations.NotFound;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.evanemo.st_user.dto.request.user.CreateUserDto;
+import ru.evanemo.st_user.dto.response.user.GetUserDto;
+import ru.evanemo.st_user.exception.AlreadyExistsException;
 import ru.evanemo.st_user.exception.NotFoundException;
 import ru.evanemo.st_user.exception.UserNotFoundException;
 import ru.evanemo.st_user.model.User;
@@ -25,6 +27,7 @@ public class UserService {
     return userRepository.save(user);
   }
   public User createUser(CreateUserDto dto) {
+    checkUserExistsByEmail(dto.getEmail());
     var user = User.builder()
         .name(dto.getName())
         .surname(dto.getSurname())
@@ -45,14 +48,21 @@ public class UserService {
         ()->new NotFoundException(String.format(NotFoundException.USR_BY_ID, id))
     );
   }
-  public List<User> getStudentsByFIO(String fioPart){
+
+  public List<GetUserDto> findByEmailPart(String emailPart){
     return userRepository.findAll().stream()
-        .filter(u->u.getRole().getName().equals("STUDENT"))
-        .filter(
-            u -> u.getName().contains(fioPart) || u.getSurname().contains(fioPart) || u.getThirdName().contains(fioPart))
-        .collect(Collectors.toList());
+        .filter(u -> u.getRole().getName().equals("STUDENT") && u.getEmail().contains(emailPart))
+        .map(GetUserDto::fromUser).collect(Collectors.toList());
   }
-  public List<User> getStudentsByGroup(UUID groupId){
-    return userRepository.findByGroupId(groupId);
+
+  public List<GetUserDto> getStudentsByGroup(UUID groupId){
+    return userRepository.findByGroupId(groupId).stream().map(GetUserDto::fromUser).collect(Collectors.toList());
+  }
+
+  private void checkUserExistsByEmail(String email) throws AlreadyExistsException{
+    var user = userRepository.findByEmail(email);
+    if(user.isPresent()){
+      throw new AlreadyExistsException("user with such email already exists: "+ email);
+    }
   }
 }

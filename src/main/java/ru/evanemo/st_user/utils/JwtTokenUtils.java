@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenUtils {
-    private final Duration jwtLifetime = Duration.ofMinutes(1);
+    private final Duration jwtLifetime = Duration.ofHours(5);
     private final SecretKey secretKey;
     private final JwtParser jwtParser;
 

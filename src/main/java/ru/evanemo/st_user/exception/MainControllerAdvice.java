@@ -30,4 +30,9 @@ public class MainControllerAdvice {
   protected ResponseEntity<String> handleNotFound(NotFoundException ex) {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
   }
+
+  @ExceptionHandler(AlreadyExistsException.class)
+  protected ResponseEntity<String> handleAlreadyExists(AlreadyExistsException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+  }
 }

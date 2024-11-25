@@ -4,10 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.evanemo.st_user.dto.request.groups.AddStudentToGroupDto;
 import ru.evanemo.st_user.dto.request.groups.CreateGroupDto;
+import ru.evanemo.st_user.dto.response.groups.GetGroupDto;
 import ru.evanemo.st_user.dto.response.groups.GroupCreatedDto;
+import ru.evanemo.st_user.dto.response.user.GetUserDto;
 import ru.evanemo.st_user.exception.NotFoundException;
 import ru.evanemo.st_user.model.Group;
 import ru.evanemo.st_user.repository.GroupRepository;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +33,7 @@ public class GroupService {
         .name(group.getName())
         .teacherId(group.getTeacher().getId()).build();
   }
+
   public void addStudent(AddStudentToGroupDto dto){
     var student = userService.findById(dto.getStudentId());
     var group = groupRepository.findById(dto.getGroupId()).orElseThrow(
@@ -36,5 +43,8 @@ public class GroupService {
     student.setGroup(group);
     userService.saveUser(student);
     groupRepository.save(group);
+  }
+  public List<GetGroupDto> getGroupsByTeacherId(UUID teacherId){
+    return groupRepository.findByTeacherId(teacherId).stream().map(GetGroupDto::fromGroup).collect(Collectors.toList());
   }
 }
