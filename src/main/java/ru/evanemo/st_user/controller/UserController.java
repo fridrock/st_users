@@ -24,6 +24,7 @@ import ru.evanemo.st_user.dto.response.token.TokenDto;
 import ru.evanemo.st_user.dto.response.user.GetUserDto;
 import ru.evanemo.st_user.service.UserService;
 import ru.evanemo.st_user.utils.JwtTokenUtils;
+import ru.evanemo.st_user.utils.SecurityContextHolderUtils;
 import ru.evanemo.st_user.utils.UserDetailsAdapter;
 
 import java.util.List;
@@ -66,5 +67,10 @@ public class UserController {
   @GetMapping("/byGroup")
   public ResponseEntity<List<GetUserDto>> getByGroup(@RequestParam("groupId") UUID groupId){
     return ResponseEntity.ok(userService.getStudentsByGroup(groupId));
+  }
+  @PreAuthorize("hasAuthority('STUDENT')")
+  @GetMapping("/userInfo")
+  public ResponseEntity<GetUserDto> getUserInfo(){
+    return ResponseEntity.ok(GetUserDto.fromUser(userService.findById(SecurityContextHolderUtils.getUserId())));
   }
 }
