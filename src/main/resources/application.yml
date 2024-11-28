@@ -11,3 +11,5 @@ spring:
   sql:
     init:
       platform: postgres
+server:
+  port: 8081
