@@ -44,7 +44,24 @@ public class GroupService {
     userService.saveUser(student);
     groupRepository.save(group);
   }
+  public void deleteStudent(AddStudentToGroupDto dto){
+    var student = userService.findById(dto.getStudentId());
+    var group = groupRepository.findById(dto.getGroupId()).orElseThrow(
+        ()->new NotFoundException(String.format(NotFoundException.GROUP_BY_ID, dto.getGroupId()))
+    );
+    group.getStudents().remove(student);
+    student.setGroup(null);
+    userService.saveUser(student);
+    groupRepository.save(group);
+  }
+
   public List<GetGroupDto> getGroupsByTeacherId(UUID teacherId){
     return groupRepository.findByTeacherId(teacherId).stream().map(GetGroupDto::fromGroup).collect(Collectors.toList());
+  }
+  public GetGroupDto getById(UUID groupId){
+    var group = groupRepository.findById(groupId).orElseThrow(
+        ()->new NotFoundException(String.format(NotFoundException.GROUP_BY_ID, groupId))
+    );
+    return GetGroupDto.fromGroup(group);
   }
 }
